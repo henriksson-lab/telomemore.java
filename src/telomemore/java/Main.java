@@ -19,10 +19,16 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		
 		
+		File fOutCSV=new File("data/testout.csv");
 		File fR1=new File("data/R1.fastq.gz");
 		File fR2=new File("data/R2.fastq.gz");
-		File fOutCSV=new File("data/testout.csv");
 
+		if(args.length!=0) {
+			fOutCSV=new File(args[0]);
+			fR1=new File(args[1]);
+			fR2=new File(args[2]);
+		}
+		
 		
 		//Set up the counters
 		ArrayList<Counter> listCounters=new ArrayList<Counter>();
