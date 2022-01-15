@@ -1,5 +1,7 @@
 package telomemore.java;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,5 +23,7 @@ public interface Counter {
 	public void addOutputHeader(ArrayList<String> header);
 
 	public void addCellInfo(ArrayList<String> line, String bc);
+
+	public void storeExtras(File fOutCSV) throws FileNotFoundException;
 
 }

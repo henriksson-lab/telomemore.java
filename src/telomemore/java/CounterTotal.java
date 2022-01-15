@@ -1,5 +1,6 @@
 package telomemore.java;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -42,5 +43,8 @@ public class CounterTotal implements Counter {
 	}
 
 	
-	
+	public void storeExtras(File fOutCSV) {
+		
+	}
+
 }

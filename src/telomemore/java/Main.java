@@ -73,6 +73,10 @@ public class Main {
 		}
 		pw.close();
 		
+		//Other goodies to save
+		for(Counter counter:listCounters)
+			counter.storeExtras(fOutCSV);
+		
 		System.out.println("done");
 		
 	}

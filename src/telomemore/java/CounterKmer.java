@@ -1,5 +1,9 @@
 package telomemore.java;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -96,8 +100,13 @@ public class CounterKmer implements Counter {
 			histogramUniqueCount.add(numUnique);
 		}
 		
-		histogramUniqueCount.print();
-		histogramDups.print();
+		System.out.println("For kmer "+patternSeq);
+		System.out.println("Histogram unique counts: ");
+		System.out.println(histogramUniqueCount.print());
+		System.out.println();
+		System.out.println("Histogram of duplicates: ");
+		System.out.println(histogramDups.print());
+		System.out.println();
 	}
 
 	public Collection<String> getBC(){
@@ -112,5 +121,17 @@ public class CounterKmer implements Counter {
 		line.add(countForBC.get(bc).toString());
 	}
 
+	public void storeExtras(File fOutCSV) throws FileNotFoundException {
+		File fHistUnique=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histUnique");
+		File fHistDups=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histDups");
+		
+		PrintWriter pw=new PrintWriter(fHistUnique);
+		pw.print(histogramUniqueCount.print());
+		pw.close();
+		pw=new PrintWriter(fHistDups);
+		pw.print(histogramDups.print());
+		pw.close();
+	}
 
+	
 }
