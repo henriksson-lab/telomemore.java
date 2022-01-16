@@ -35,7 +35,8 @@ public class CounterKmer implements Counter {
 	//The BCs we have seen anywhere in the file
 	private TreeSet<String> seenBC=new TreeSet<String>();
 	//Unique counts for each BC
-	private TreeMap<String, Integer> countForBC=new TreeMap<String, Integer>();
+	private TreeMap<String, Integer> dedupCountForBC=new TreeMap<String, Integer>();
+	private TreeMap<String, Integer> totalCountForBC=new TreeMap<String, Integer>();
 
 	
 	
@@ -51,7 +52,8 @@ public class CounterKmer implements Counter {
 		histogramKmerCount=new Histogram();
 		reads.clear();
 		seenBC.clear();
-		countForBC.clear();
+		dedupCountForBC.clear();
+		totalCountForBC.clear();
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class CounterKmer implements Counter {
 		//Which BCs we have seen
 		seenBC.add(bc);
 		
-		//Count the occurences
+		//Count the occurrences
 		Matcher m = p.matcher(seq1);  
 		int count = 0;
 		while (m.find()) {
@@ -93,7 +95,7 @@ public class CounterKmer implements Counter {
 
 		//Initial counts from 0
 		for(String bc:seenBC)
-			countForBC.put(bc,0);
+			dedupCountForBC.put(bc,0);
 		
 		//Check which are unique
 		for(Entry<String,ArrayList<String>> e:reads.entrySet()) {
@@ -114,7 +116,9 @@ public class CounterKmer implements Counter {
 			
 			//Build histogram of barcode counts
 			int numUnique=readcount.size();
-			countForBC.put(bc,numUnique);
+			int numTotal=readlist.size();
+			dedupCountForBC.put(bc,numUnique);
+			totalCountForBC.put(bc,numTotal);
 			histogramUniqueCount.add(numUnique);
 		}
 		
@@ -133,11 +137,13 @@ public class CounterKmer implements Counter {
 	}
 	
 	public void addOutputHeader(ArrayList<String> header) {
-		header.add("cnt_"+patternSeq);
+		header.add("dedupcnt_"+patternSeq);
+		header.add("totalcnt_"+patternSeq);
 	}
 
 	public void addCellInfo(ArrayList<String> line, String bc) {
-		line.add(countForBC.get(bc).toString());
+		line.add(dedupCountForBC.get(bc).toString());
+		line.add(totalCountForBC.get(bc).toString());
 	}
 
 	public void storeExtras(File fOutCSV) throws FileNotFoundException {

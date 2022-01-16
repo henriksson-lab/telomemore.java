@@ -32,7 +32,7 @@ public class Main {
 		System.out.println("        [[-bulkfastq R1.fq.gz[,R2.fq.gz]]]   ---  maybe do not implement");
 		System.out.println("        [[-10xbampe possorted.bam]]");
 		System.out.println("        [[-10xbamse possorted.bam]]");
-		System.out.println("        [[-10xatac directoryWithAllCellrangerFolders]]  -- Convenience method for ATAC and ARC");
+		System.out.println("        [[-10xatacs directoryWithAllCellrangerFolders]]  -- Convenience method for ATAC and ARC");
 		System.out.println();
 		System.exit(0);
 	}
