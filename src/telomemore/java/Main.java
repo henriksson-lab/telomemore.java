@@ -23,6 +23,14 @@ public class Main {
 		File fR1=new File("data/R1.fastq.gz");
 		File fR2=new File("data/R2.fastq.gz");
 
+		
+		if(args.length==0) {
+			args="data/testout.csv -countkmer CCCTAA -counttotal -sciatac data/R1.fastq.gz,data/R2.fastq.gz".split(" ", 0);
+		}
+		
+
+		
+		
 		if(args.length!=0) {
 			fOutCSV=new File(args[0]);
 			fR1=new File(args[1]);

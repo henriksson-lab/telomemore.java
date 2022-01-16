@@ -1,6 +1,5 @@
 package telomemore.java;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -21,18 +20,28 @@ import java.util.regex.Pattern;
  */
 public class CounterKmer implements Counter {
 
-	Pattern p;
-	int minCount=5;
+	private Histogram histogramUniqueCount=new Histogram();
+	private Histogram histogramDups=new Histogram();
+	private Histogram histogramKmerCount=new Histogram();
+
+	private Pattern p;
+	private String patternSeq;
+	private int minCount=5;
 	
-	String patternSeq;
+	
 	public CounterKmer(String seq) {
 		patternSeq=seq;
 		p = Pattern.compile(seq);
 	}
 	
-	private TreeMap<String, ArrayList<String>> reads=new TreeMap<String, ArrayList<String>>();
 	
+	//For each barcode, the associated reads
+	private TreeMap<String, ArrayList<String>> reads=new TreeMap<String, ArrayList<String>>();
+	//The BCs we have seen anywhere in the file
 	private TreeSet<String> seenBC=new TreeSet<String>();
+	//Unique counts for each BC
+	private TreeMap<String, Integer> countForBC=new TreeMap<String, Integer>();
+
 	
 	@Override
 	public void count(String bc, String seq1, String seq2) {
@@ -50,6 +59,7 @@ public class CounterKmer implements Counter {
 		while (m.find()) {
 		    count++;
 		}
+		histogramKmerCount.add(count);
 
 		//If enough counts, keep it
 		if(count>=minCount) {
@@ -64,11 +74,8 @@ public class CounterKmer implements Counter {
 	}
 	
 	
-	Histogram histogramUniqueCount=new Histogram();
-	Histogram histogramDups=new Histogram();
 	
 	
-	TreeMap<String, Integer> countForBC=new TreeMap<String, Integer>();
 
 	@Override
 	public void process() {
@@ -124,13 +131,20 @@ public class CounterKmer implements Counter {
 	public void storeExtras(File fOutCSV) throws FileNotFoundException {
 		File fHistUnique=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histUnique");
 		File fHistDups=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histDups");
+		File fHistKmers=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histKmer_"+patternSeq);
 		
 		PrintWriter pw=new PrintWriter(fHistUnique);
-		pw.print(histogramUniqueCount.print());
+		pw.print(histogramUniqueCount.print()+"\n");
 		pw.close();
+		
 		pw=new PrintWriter(fHistDups);
-		pw.print(histogramDups.print());
+		pw.print(histogramDups.print()+"\n");
 		pw.close();
+
+		pw=new PrintWriter(fHistKmers);
+		pw.print(histogramKmerCount.print()+"\n");
+		pw.close();
+
 	}
 
 	
