@@ -29,12 +29,14 @@ public class CounterKmer implements Counter {
 	private int minCount=5;
 	
 	
-	public CounterKmer(String seq) {
+	public CounterKmer(String seq, int minCount) {
 		patternSeq=seq;
 		p = Pattern.compile(seq);
+		this.minCount=minCount;
 	}
 	
 	
+
 	//For each barcode, the associated reads
 	private TreeMap<String, ArrayList<String>> reads=new TreeMap<String, ArrayList<String>>();
 	//The BCs we have seen anywhere in the file
@@ -109,10 +111,11 @@ public class CounterKmer implements Counter {
 		
 		System.out.println("For kmer "+patternSeq);
 		System.out.println("Histogram unique counts: ");
-		System.out.println(histogramUniqueCount.print());
-		System.out.println();
+		System.out.println(histogramUniqueCount.toString());
 		System.out.println("Histogram of duplicates: ");
-		System.out.println(histogramDups.print());
+		System.out.println(histogramDups.toString());
+		System.out.println("Histogram of kmer: ");
+		System.out.println(histogramKmerCount.toString());
 		System.out.println();
 	}
 
@@ -121,7 +124,7 @@ public class CounterKmer implements Counter {
 	}
 	
 	public void addOutputHeader(ArrayList<String> header) {
-		header.add("cnt_patternSeq");
+		header.add("cnt_"+patternSeq);
 	}
 
 	public void addCellInfo(ArrayList<String> line, String bc) {
@@ -134,15 +137,15 @@ public class CounterKmer implements Counter {
 		File fHistKmers=new File(fOutCSV.getParentFile(), fOutCSV.getName()+".histKmer_"+patternSeq);
 		
 		PrintWriter pw=new PrintWriter(fHistUnique);
-		pw.print(histogramUniqueCount.print()+"\n");
+		pw.print(histogramUniqueCount.toString()+"\n");
 		pw.close();
 		
 		pw=new PrintWriter(fHistDups);
-		pw.print(histogramDups.print()+"\n");
+		pw.print(histogramDups.toString()+"\n");
 		pw.close();
 
 		pw=new PrintWriter(fHistKmers);
-		pw.print(histogramKmerCount.print()+"\n");
+		pw.print(histogramKmerCount.toString()+"\n");
 		pw.close();
 
 	}

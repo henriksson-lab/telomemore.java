@@ -1,6 +1,5 @@
 package telomemore.java;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Histogram {
@@ -15,7 +14,7 @@ public class Histogram {
 		bins.set(bin,bins.get(bin)+1);
 	}
 	
-	public String print() {
+	public String toString() {
 		StringBuilder sb=new StringBuilder();
 		for(Integer i:bins) {
 			sb.append(i+" ");
