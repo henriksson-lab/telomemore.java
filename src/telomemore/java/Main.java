@@ -165,6 +165,11 @@ public class Main {
 						csvheader=makeCSVheader(listCountersWrapped, true);
 						sbBody.append(makeCSV(listCountersWrapped, fCR.getName()));
 
+						//No attempt at gathering all the histograms currently.
+						//Put them next to the BAM-files
+						for(Counter counter:listCounters)
+							counter.storeExtras(fBAM);
+
 						//Prepare for the next round
 						for(Counter counter:listCountersWrapped)
 							counter.reset();
@@ -180,6 +185,8 @@ public class Main {
 				pw.print(sbBody.toString());
 				pw.close();
 				
+				//This overrides the normal counting at the end.
+				//Note that the histograms will not be written
 				System.exit(0);
 			} else {
 				System.out.println("Unknown parameter: "+args[curarg]);
