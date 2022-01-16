@@ -28,14 +28,7 @@ public class CounterKmer implements Counter {
 	private String patternSeq;
 	private int minCount=5;
 	
-	
-	public CounterKmer(String seq, int minCount) {
-		patternSeq=seq;
-		p = Pattern.compile(seq);
-		this.minCount=minCount;
-	}
-	
-	
+
 
 	//For each barcode, the associated reads
 	private TreeMap<String, ArrayList<String>> reads=new TreeMap<String, ArrayList<String>>();
@@ -45,6 +38,22 @@ public class CounterKmer implements Counter {
 	private TreeMap<String, Integer> countForBC=new TreeMap<String, Integer>();
 
 	
+	
+	public CounterKmer(String seq, int minCount) {
+		patternSeq=seq;
+		p = Pattern.compile(seq);
+		this.minCount=minCount;
+	}
+	
+	public void reset() {
+		histogramUniqueCount=new Histogram();
+		histogramDups=new Histogram();
+		histogramKmerCount=new Histogram();
+		reads.clear();
+		seenBC.clear();
+		countForBC.clear();
+	}
+
 	@Override
 	public void count(String bc, String seq1, String seq2) {
 		
@@ -147,7 +156,6 @@ public class CounterKmer implements Counter {
 		pw=new PrintWriter(fHistKmers);
 		pw.print(histogramKmerCount.toString()+"\n");
 		pw.close();
-
 	}
 
 	

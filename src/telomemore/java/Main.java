@@ -22,15 +22,30 @@ public class Main {
 		System.out.println("Note that the order of the arguments IS important, and that little checking is performed");
 		System.out.println("");
 		System.out.println("java -Xmx2g -jar telomemore.jar OUTPUT.csv ");
-		System.out.println("                          [-filterbc barcodes.tsv.gz]");
-		System.out.println("                          [-countkmer CCCTAA[,5]]");
-		System.out.println("                          [-counttotal]");
-		System.out.println("                          [[-sciatac R1.fq.gz,R2.fq.gz]]");
-		System.out.println("                          [[-bulkfastq R1.fq.gz[,R2.fq.gz]]]   ---  maybe do not implement");
-		System.out.println("                          [[-10xbampe possorted.bam]]");
-		System.out.println("                          [[-10xbamse possorted.bam]]");
+		System.out.println("        [-filterbc barcodes.tsv.gz]");
+		System.out.println("        [-countkmer CCCTAA[,5]]");
+		System.out.println("        [-counttotal]");
+		System.out.println();
+		System.out.println("  Then pick one of these input methods:");
+		System.out.println();
+		System.out.println("        [[-sciatac R1.fq.gz,R2.fq.gz]]");
+		System.out.println("        [[-bulkfastq R1.fq.gz[,R2.fq.gz]]]   ---  maybe do not implement");
+		System.out.println("        [[-10xbampe possorted.bam]]");
+		System.out.println("        [[-10xbamse possorted.bam]]");
+		System.out.println("        [[-10xatac directoryWithAllCellrangerFolders]]  -- Convenience method for ATAC and ARC");
 		System.out.println();
 		System.exit(0);
+	}
+	
+	
+	public static ArrayList<Counter> wrapCounters(ArrayList<Counter> listCounters, CounterLimitBC limitbc){
+		if(limitbc!=null) {
+			ArrayList<Counter> newCounters=new ArrayList<Counter>();
+			for(Counter c:listCounters)
+				newCounters.add(limitbc.wrapCounter(c));
+			return newCounters;
+		} else
+			return listCounters;
 	}
 	
 	/**
@@ -79,7 +94,6 @@ public class Main {
 				listCounters.add(c);
 			}
 			else if(args[curarg].equals("-sciatac")) {
-				
 				String[] extras=args[curarg+1].split(",",0);
 				curarg++;
 
@@ -87,10 +101,10 @@ public class Main {
 				File fR2=new File(extras[1]);
 
 				System.out.println("Processing sciATAC reads from "+fR1+"  and  "+fR2);
-				SciAtacReader reader=new SciAtacReader();
+				ReaderSciAtac reader=new ReaderSciAtac();
 				reader.read(
 						fR1,fR2,
-						listCounters
+						wrapCounters(listCounters, limitbc)
 						);
 			}
 			else if(args[curarg].equals("-bulkfastq")) {
@@ -101,13 +115,72 @@ public class Main {
 				curarg++;
 				File fBAM=new File(extras[0]);
 				Reader10xbamPE r=new Reader10xbamPE();
-				r.read(fBAM, listCounters);
+				r.read(fBAM, wrapCounters(listCounters, limitbc));
 			} else if(args[curarg].equals("-10xbamse")) {
-					String[] extras=args[curarg+1].split(",",0);
-					curarg++;
-					File fBAM=new File(extras[0]);
-					Reader10xbamSE r=new Reader10xbamSE();
-					r.read(fBAM, listCounters);
+				String[] extras=args[curarg+1].split(",",0);
+				curarg++;
+				File fBAM=new File(extras[0]);
+				Reader10xbamSE r=new Reader10xbamSE();
+				r.read(fBAM, wrapCounters(listCounters, limitbc));
+			} else if(args[curarg].equals("-10xatacs")) {
+				String[] extras=args[curarg+1].split(",",0);
+				curarg++;
+				
+				File fBasedir=new File(extras[0]);
+				String csvheader=null;
+				StringBuilder sbBody=new StringBuilder();
+				for(File fCR:fBasedir.listFiles()) {
+					
+					File outs=new File(fCR,"outs");
+					
+					//Detect the filename for the BC filtering
+					limitbc=null;
+					File fBC=new File(new File(outs,"filtered_peak_bc_matrix"),"barcodes.tsv");
+					if(!fBC.exists())
+						fBC=new File(new File(outs,"filtered_feature_bc_matrix"),"barcodes.tsv.gz");
+					if(fBC.exists()) {
+						System.out.println("Will filter by barcodes from "+fBC);
+						limitbc=new CounterLimitBC(fBC);
+					}
+					else
+						System.out.println("Will not filter by barcodes");
+					
+					//Detect the filename for the BAM
+					File fBAM=new File(outs,"atac_possorted_bam.bam");
+					if(!fBAM.exists())
+						fBAM=new File(outs,"possorted_bam.bam");
+					if(fBAM.exists()) {
+						
+						ArrayList<Counter> listCountersWrapped = wrapCounters(listCounters, limitbc);
+						
+						System.out.println("===== Processing "+fBAM);
+						Reader10xbamPE r=new Reader10xbamPE();
+						r.read(fBAM, listCountersWrapped);
+
+						System.out.println("Final processing for "+fCR);
+						for(Counter counter:listCountersWrapped)
+							counter.process();
+						
+						System.out.println("Produce partial outputs for "+fCR);
+						csvheader=makeCSVheader(listCountersWrapped, true);
+						sbBody.append(makeCSV(listCountersWrapped, fCR.getName()));
+
+						//Prepare for the next round
+						for(Counter counter:listCountersWrapped)
+							counter.reset();
+						
+					} else {
+						System.out.println("Detected no BAM in "+fCR);
+					}
+					
+				}
+				
+				PrintWriter pw=new PrintWriter(fOutCSV);
+				pw.print(csvheader);
+				pw.print(sbBody.toString());
+				pw.close();
+				
+				System.exit(0);
 			} else {
 				System.out.println("Unknown parameter: "+args[curarg]);
 				System.exit(1);
@@ -120,28 +193,12 @@ public class Main {
 			counter.process();
 		
 		System.out.println("Produce outputs");
+		String csvheader=makeCSVheader(listCounters, false);
+		String csvbody=makeCSV(listCounters, null);
+		
 		PrintWriter pw=new PrintWriter(fOutCSV);
-		
-		//Write the CSV header
-		ArrayList<String> header=new ArrayList<String>();
-		for(Counter counter:listCounters)
-			counter.addOutputHeader(header);
-		pw.print("\"\"");
-		for(String s:header)
-			pw.print(",\""+s+"\"");
-		pw.println();
-		
-		//Write a line for each cell
-		for(String bc:listCounters.get(0).getBC()) {
-			ArrayList<String> line=new ArrayList<String>();
-			for(Counter counter:listCounters)
-				counter.addCellInfo(line,bc);
-			
-			pw.print(",\""+bc+"\"");
-			for(String s:line)
-				pw.print(","+s+"");
-			pw.println();
-		}
+		pw.print(csvheader);
+		pw.print(csvbody);
 		pw.close();
 		
 		//Other goodies to save
@@ -150,6 +207,39 @@ public class Main {
 		
 		System.out.println("done");
 		
+	}
+
+	private static String makeCSV(ArrayList<Counter> listCounters, String dataset) {
+		StringBuilder sb=new StringBuilder();
+		
+		//Write a line for each cell
+		for(String bc:listCounters.get(0).getBC()) {
+			ArrayList<String> line=new ArrayList<String>();
+			for(Counter counter:listCounters)
+				counter.addCellInfo(line,bc);
+			
+			sb.append(",\""+bc+"\"");
+			for(String s:line)
+				sb.append(","+s+"");
+			if(dataset!=null)
+				sb.append(","+dataset+"");
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	private static String makeCSVheader(ArrayList<Counter> listCounters, boolean dataset) {
+		StringBuilder sb=new StringBuilder();
+		ArrayList<String> header=new ArrayList<String>();
+		for(Counter counter:listCounters)
+			counter.addOutputHeader(header);
+		sb.append("\"barcode\"");
+		for(String s:header)
+			sb.append(",\""+s+"\"");
+		if(dataset)
+			sb.append(",\"dataset\"");
+		sb.append("\n");
+		return sb.toString();
 	}
 	
 

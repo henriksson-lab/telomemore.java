@@ -26,6 +26,11 @@ public class CounterTotal implements Counter {
 	}
 	
 	@Override
+	public void reset() {
+		reads.clear();
+	}
+	
+	@Override
 	public void process() {
 	}
 	

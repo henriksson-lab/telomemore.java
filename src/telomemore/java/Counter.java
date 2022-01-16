@@ -26,4 +26,6 @@ public interface Counter {
 
 	public void storeExtras(File fOutCSV) throws FileNotFoundException;
 
+	public void reset();
+
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,8 +25,10 @@ public class CounterLimitBC {
 	
 	public CounterLimitBC(File fBarcodes) throws IOException {
 		
-		GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(fBarcodes));
-		BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+		InputStream is=new FileInputStream(fBarcodes);
+		if(fBarcodes.getName().endsWith(".gz"))
+			is = new GZIPInputStream(is);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		
 		String line=null;
 		while((line=br.readLine())!=null) {
@@ -73,6 +76,11 @@ public class CounterLimitBC {
 			public void storeExtras(File fOutCSV) throws FileNotFoundException {
 				c.storeExtras(fOutCSV);
 			}
+			
+			public void reset() {
+				c.reset();
+			}
+
 		};
 	}
 	

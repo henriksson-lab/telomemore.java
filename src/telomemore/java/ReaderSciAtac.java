@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
@@ -14,17 +15,22 @@ import java.util.zip.GZIPInputStream;
  * @author Johan Henriksson
  *
  */
-public class SciAtacReader {
+public class ReaderSciAtac {
 
+	public static BufferedReader openBR(File fInput) throws IOException {
+		InputStream is=new FileInputStream(fInput);
+		if(fInput.getName().endsWith(".gz"))
+			is = new GZIPInputStream(is);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		return br;
+	}
+	
 	public void read(
 			File fR1,File fR2,
 			ArrayList<Counter> listCounters) throws IOException {
 		
-		GZIPInputStream gzip1 = new GZIPInputStream(new FileInputStream(fR1));
-		BufferedReader br1 = new BufferedReader(new InputStreamReader(gzip1));
-
-		GZIPInputStream gzip2 = new GZIPInputStream(new FileInputStream(fR2));
-		BufferedReader br2 = new BufferedReader(new InputStreamReader(gzip2));
+		BufferedReader br1 = openBR(fR1);
+		BufferedReader br2 = openBR(fR2);
 
 		int numReads=0;
 		
