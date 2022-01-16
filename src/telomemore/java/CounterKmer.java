@@ -94,8 +94,10 @@ public class CounterKmer implements Counter {
 	public void process() {
 
 		//Initial counts from 0
-		for(String bc:seenBC)
+		for(String bc:seenBC) {
 			dedupCountForBC.put(bc,0);
+			totalCountForBC.put(bc,0);
+		}
 		
 		//Check which are unique
 		for(Entry<String,ArrayList<String>> e:reads.entrySet()) {
