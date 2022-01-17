@@ -167,7 +167,7 @@ public class Main {
 						
 						System.out.println("Produce partial outputs for "+fCR);
 						csvheader=makeCSVheader(listCountersWrapped, true);
-						sbBody.append(makeCSV(listCountersWrapped, fCR.getName()));
+						sbBody.append(makeCSVbody(listCountersWrapped, fCR.getName()));
 
 						//No attempt at gathering all the histograms currently.
 						//Put them next to the BAM-files
@@ -205,7 +205,7 @@ public class Main {
 		
 		System.out.println("Produce outputs");
 		String csvheader=makeCSVheader(listCounters, false);
-		String csvbody=makeCSV(listCounters, null);
+		String csvbody=makeCSVbody(listCounters, null);
 		
 		PrintWriter pw=new PrintWriter(fOutCSV);
 		pw.print(csvheader);
@@ -220,7 +220,14 @@ public class Main {
 		
 	}
 
-	private static String makeCSV(ArrayList<Counter> listCounters, String dataset) {
+	
+	/**
+	 * Write the body of a CSV file
+	 * @param listCounters
+	 * @param dataset
+	 * @return
+	 */
+	private static String makeCSVbody(ArrayList<Counter> listCounters, String dataset) {
 		StringBuilder sb=new StringBuilder();
 		
 		//Write a line for each cell
@@ -229,7 +236,7 @@ public class Main {
 			for(Counter counter:listCounters)
 				counter.addCellInfo(line,bc);
 			
-			sb.append(",\""+bc+"\"");
+			sb.append("\""+bc+"\"");
 			for(String s:line)
 				sb.append(","+s+"");
 			if(dataset!=null)
@@ -239,6 +246,8 @@ public class Main {
 		return sb.toString();
 	}
 
+	
+	
 	private static String makeCSVheader(ArrayList<Counter> listCounters, boolean dataset) {
 		StringBuilder sb=new StringBuilder();
 		ArrayList<String> header=new ArrayList<String>();
