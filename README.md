@@ -1,26 +1,34 @@
 # Telomemore - Analysis of telomere state
 
-This software is used to count telemoric reads in scATACseq data. Other motifs can also be
-used for the scan.
+This software is used to count telemoric reads in scATACseq data, multiomic scATACseq, and bulk ATACseq. 
+Other motifs can also be used for the scan.
 
-A less versatile prototype of Telomemore was first implemented in Python. 
-Code is available at https://github.com/henriksson-lab/telomemore
+A less versatile prototype of Telomemore was first implemented in Python, with code available at https://github.com/henriksson-lab/telomemore
 
 ## Features
 
-Support input from 10x, sciATAC, and bulk/SS2 data
-
+Telomemore supports input from 10x, sciATAC, and bulk/SS2 data
 
 ## Resources
 
-* Jupyter notebooks showing integration with Scanpy. TODO
-* R scripts showing integration with Signac and ArchR. TODO
+In the Examples folder you will find:
 
-* Documentation: https://willros.github.io/telomemore     TODO - new for java
+* Jupyter notebooks showing integration with SCANPY
+* R scripts showing integration with Signac and ArchR
+
+## Building and using
+
+First build the software with the command `make` in the terminal. A file telomemore.jar will be produced.
+
+To get information about usage:
+`java -jar telomemore.jar`
+
+Recommended basic usage for 10x output is:
+`java -Xmx2g -jar telomemore.jar OUTPUT.csv -counttotal -countkmer -10xatacs /home/yours/thecellrangeroutputdiretory`
 
 ## Reference
 
-Manuscript in preparation
+"Telomemore enables single-cell analysis of cell cycle and chromatin condensation" by I.S.Mihai et al (Manuscript in preparation)
 
 ## License
 
@@ -30,4 +38,3 @@ Free software: MIT license
 
 Original implementation by William Rosenbaum. Java-reimplementation by Johan Henriksson.
 
-This package was created with [Cookiecutter](https://github.com/cookiecutter/cookiecutter).
