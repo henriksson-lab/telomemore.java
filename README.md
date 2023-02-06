@@ -1,3 +1,6 @@
+![telomemore](logo/telomemore_logo.png?raw=true "Telomemore")
+
+
 # Telomemore - Analysis of telomere state
 
 This software is used to count telemoric reads in scATACseq data and multiomic scATACseq. 
