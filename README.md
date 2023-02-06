@@ -1,20 +1,16 @@
 # Telomemore - Analysis of telomere state
 
-This software is used to count telemoric reads in scATACseq data, multiomic scATACseq, and bulk ATACseq. 
+This software is used to count telemoric reads in scATACseq data and multiomic scATACseq. 
 Other motifs can also be used for the scan.
 
 A less versatile prototype of Telomemore was first implemented in Python, with code available at https://github.com/henriksson-lab/telomemore
-
-## Features
-
-Telomemore supports input from 10x, sciATAC, and bulk/SS2 data
 
 ## Resources
 
 In the Examples folder you will find:
 
 * Jupyter notebooks showing integration with SCANPY
-* R scripts showing integration with Signac and ArchR
+* R scripts showing integration with Signac
 
 ## Building and using
 
