@@ -38,6 +38,8 @@ public class Main {
 		System.out.println("   [[-10xatacs directoryWithAllCellrangerFolders]]  -- Convenience method for ATAC and ARC");
 		System.out.println("                                                    -- will automatically find BAM and barcodes to filter by");
 		System.out.println();
+		System.out.println("   It is also possible to store all detected reads with [-storereads OUTPUT.fa]");
+		System.out.println();
 		System.exit(0);
 	}
 	
@@ -58,6 +60,8 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		ArrayList<Counter> listCounters=new ArrayList<Counter>();
 
+		File fStoreReads=null;
+		
 		///// For testing
 		//data/testout.csv -countkmer CCCTAA -counttotal -sciatac data/R1.fastq.gz,data/R2.fastq.gz
 		//data/testout.csv -countkmer CCCTAA -counttotal -10xbampe data/little_atac_possorted_bam.bam
@@ -74,6 +78,10 @@ public class Main {
 		for(int curarg=1;curarg<args.length;curarg++) {
 			if(args[curarg].equals("-h"))
 				printHelp();
+			else if(args[curarg].equals("-storereads")) {
+				fStoreReads=new File(args[curarg+1]);
+				curarg++;
+			}
 			else if(args[curarg].equals("-filterbc")) {
 				limitbc=new CounterLimitBC(new File(args[curarg+1]));
 				curarg++;
@@ -111,9 +119,9 @@ public class Main {
 						wrapCounters(listCounters, limitbc)
 						);
 			}
-			else if(args[curarg].equals("-bulkfastq")) {
-				System.out.println("todo");
-			}
+			/*else if(args[curarg].equals("-bulkfastq")) {
+				System.out.println("TODO; use old python tool instead for now");
+			}*/
 			else if(args[curarg].equals("-10xbampe")) {
 				String[] extras=args[curarg+1].split(",",0);
 				curarg++;
