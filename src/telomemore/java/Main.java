@@ -26,8 +26,9 @@ public class Main {
 		System.out.println("  Specify what to count: ");
 		System.out.println();
 		System.out.println("   [-filterbc barcodes.tsv.gz]  --- Optionally only count for these barcodes");
-		System.out.println("   [[-countkmer CCCTAA[,5]]]    --- Deduplicate and count; minimum #kmers can be given.");
+		System.out.println("   [[-countkmer CCCTAA[,5]]]    --- Deduplicate and count; minimum #kmers can be given.");  //TODO search for opposite too?
 		System.out.println("                                    Specify multiple times to count several different kmers");
+		System.out.println("   [[-countkmerRC CCCTAA[,5]]]  --- Like countkmer, but search for RC in opposite read. R1+R2 kmers>=count");
 		System.out.println("   [-counttotal]                --- Count total number of reads per cell");
 		System.out.println();
 		System.out.println("  Then pick one of these input methods:");

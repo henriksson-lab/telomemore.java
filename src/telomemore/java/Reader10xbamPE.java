@@ -13,6 +13,8 @@ import java.util.TreeMap;
  * 
  * This is for paired-end reads. It keeps an infinite buffer to try and find the corresponding other read
  * 
+ * Note: unlike fastq, should search for the same motif (not reverse complemented) in both pairs
+ * 
  * @author Johan Henriksson
  *
  */
