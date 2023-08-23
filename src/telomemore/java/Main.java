@@ -100,6 +100,19 @@ public class Main {
 					c=limitbc.wrapCounter(c);
 				listCounters.add(c);
 			}
+			else if(args[curarg].equals("-countkmerRC")) {
+				String[] extras=args[curarg+1].split(",",0);
+				curarg++;
+				String kmerseq=extras[0];
+				int numkmer=5;
+				if(extras.length>1)
+					numkmer=Integer.parseInt(extras[1]);
+				
+				Counter c=new CounterKmerOpposite(kmerseq,numkmer);
+				if(limitbc!=null)
+					c=limitbc.wrapCounter(c);
+				listCounters.add(c);
+			}
 			else if(args[curarg].equals("-counttotal")) {
 				Counter c=new CounterTotal();
 				if(limitbc!=null)
